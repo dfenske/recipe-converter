@@ -1,28 +1,117 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <nav class="navbar navbar-dark bg-dark">
+      <h1 class="text-white">Recipe Converter</h1>
+    </nav>
+
+    <div class="container">
+      <h2>Original Recipe</h2>
+      <div class="row">
+        <div class="col-sm">
+          <ul class="recipe">
+            <li v-for="ingredient in recipe" :key="ingredient.name">
+              <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :showDelete="true" v-on:delete-item="deleteItem"></Ingredient>
+            </li>
+          </ul>
+        </div>
+        <div class="col-sm">
+          <new-ingredient v-on:add-ingredient="addIngredient" />
+        </div>
+      </div>
+      <div class="multiplier mt-2">
+        <label for="Multiplier">x </label>
+        <input class="form-control" v-model.number="multiplier" id="Multiplier" type="number"/>
+      </div>
+      
+      <hr/>
+      <h2>Converted Recipe</h2>
+      <div class="row">
+        <div class="offset-sm-3 col-sm-6">
+          <ul class="recipe">
+            <li v-for="ingredient in convertedRecipe" :key="ingredient.name">
+              <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :showDelete="false"></Ingredient>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Ingredient from './components/Ingredient.vue';
+import NewIngredient from './components/NewIngredient.vue';
+import { volume, weight } from './assets/conversions.js';
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    Ingredient,
+    NewIngredient
+  },
+  data() {
+    return {
+      multiplier: 1,
+      recipe: [],
+      units: {
+        volume,
+        weight
+      }
+    };
+  },
+  methods: {
+    addIngredient(name, amount, unit) {
+      this.recipe.push({
+        name: name,
+        amount: amount,
+        unit: unit
+      });
+    },
+    deleteItem(name) {
+      this.recipe.splice(this.recipe.findIndex(x => x.name===name), 1);
+    }
+  },
+  computed: {
+    convertedRecipe() {
+      return this.recipe.map(ingredient => {
+        return {
+          name: ingredient.name,
+          amount: ingredient.amount * this.multiplier,
+          unit: ingredient.unit
+        };
+      });
+    }
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style scoped lang='scss'>
+.multiplier {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: gray;
+
+  label {
+    margin: 0;
+    font-style: italic;
+  }
+
+  input {
+    font-size: 36px;
+    border: none;
+    border-bottom: 2px solid gray;
+    border-radius: 0;
+    text-align: center;
+    width: 75px;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+
+  input[type=number]::-webkit-inner-spin-button, 
+  input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+  }
 }
 </style>
