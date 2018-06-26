@@ -7,7 +7,7 @@
     <div class="form-inline row">
       <label class="col-sm" for="Unit">Units</label>
       <select class="form-control col-sm" id="Unit" v-model="unit" >
-        <option v-for="unit in allUnits" :key="unit.abbr" :value="unit.abbr">{{ unit.name }} ({{ unit.abbr }})</option>
+        <option v-for="unit in allUnits" :key="unit.name" :value="unit.name">{{ unit.name }} ({{ unit.abbr }})</option>
       </select>
     </div>
     <div class="form-inline row">

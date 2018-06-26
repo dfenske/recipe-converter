@@ -29,7 +29,7 @@
         <div class="offset-sm-3 col-sm-6">
           <ul class="recipe">
             <li v-for="ingredient in convertedRecipe" :key="ingredient.name">
-              <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :showDelete="false" :showUnits="true"></Ingredient>
+              <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :showDelete="false" :showUnits="true" v-on:update-ingredient="updateIngredient"></Ingredient>
             </li>
           </ul>
         </div>
@@ -69,6 +69,10 @@ export default {
     },
     deleteItem(name) {
       this.recipe.splice(this.recipe.findIndex(x => x.name===name), 1);
+    },
+    updateIngredient(name, newAmount, newUnit) {
+      const index = this.recipe.findIndex(x => x.name === name);
+      this.recipe.splice(index, 1, { name: name, amount: newAmount, unit: newUnit });
     }
   },
   computed: {
