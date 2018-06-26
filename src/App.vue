@@ -29,7 +29,7 @@
         <div class="offset-sm-3 col-sm-6">
           <ul class="recipe">
             <li v-for="ingredient in convertedRecipe" :key="ingredient.name">
-              <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :showDelete="false"></Ingredient>
+              <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :showDelete="false" :showUnits="true"></Ingredient>
             </li>
           </ul>
         </div>

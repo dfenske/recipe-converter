@@ -8,10 +8,17 @@
   margin-top: 30px;
 }
 
-.recipe {
+ul.recipe {
   border: 1px dashed gray;
   border-radius: 3px;
   padding: 30px;
+  list-style: none;
+  
+  li:before {
+    content: '-';
+    position: absolute;
+    margin-left: -15px;
+  }
 }
 
 h2 {
@@ -36,6 +43,6 @@ h2 {
   }
 }
 
-.capitalize {
-  text-transform: capitalize;
+.ingredient {
+  letter-spacing: 2px;
 }
