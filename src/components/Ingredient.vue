@@ -3,7 +3,7 @@
     <div class="ingredient">
       <span :class="{ medium : !converted, large : converted }" >{{ format(amount) }} {{ unitAbbr }} {{ name }} <i v-if="!converted" class="far fa-times-circle" @click="deleteItem"></i></span>
       <span :class="{ large : converted }" v-if="converted">
-        <select class="form-control inline" @change="changeUnits">
+        <select v-if="unit" class="form-control inline" @change="changeUnits">
             <option :value="null" selected disabled>Change the units...</option>
             <option v-for="unit in relevantUnits" :key="unit.name" :value="unit.name">{{ unit.name }} ({{ unit.abbr }})</option>
         </select>
@@ -32,33 +32,34 @@ export default {
       const wholeNumber =
         Math.floor(value) === 0 ? "" : Math.floor(value).toString();
       const decimal = value - wholeNumber;
+      let prefix = wholeNumber ? wholeNumber + " " : "";
       switch (decimal) {
         case 0.125:
-          return wholeNumber + "1/8";
+          return prefix + "1/8";
         case 0.2:
-          return wholeNumber + "1/5";
+          return prefix + "1/5";
         case 0.25:
-          return wholeNumber + "¼";
+          return prefix + "¼";
         case 0.33:
-          return wholeNumber + "1/3";
+          return prefix + "1/3";
         case 0.375:
-          return wholeNumber + "3/8";
+          return prefix + "3/8";
         case 0.4:
-          return wholeNumber + "2/5";
+          return prefix + "2/5";
         case 0.5:
-          return wholeNumber + "½";
+          return prefix + "½";
         case 0.6:
-          return wholeNumber + "3/5";
+          return prefix + "3/5";
         case 0.625:
-          return wholeNumber + "5/8";
+          return prefix + "5/8";
         case 0.66:
-          return wholeNumber + "2/3";
+          return prefix + "2/3";
         case 0.75:
-          return wholeNumber + "¾";
+          return prefix + "¾";
         case 0.8:
-          return wholeNumber + "4/5";
+          return prefix + "4/5";
         case 0.875:
-          return wholeNumber + "7/8";
+          return prefix + "7/8";
         default:
           return parseFloat(value.toFixed(2));
       }
@@ -73,12 +74,18 @@ export default {
   },
   computed: {
     relevantUnits() {
-      return weight[this.unitProp] ? weight : volume;
+      if (this.unit) {
+        return weight[this.unitProp] ? weight : volume;
+      }
+      return [];
     },
     unitAbbr() {
-      return weight[this.unitProp]
-        ? weight[this.unitProp].abbr
-        : volume[this.unitProp].abbr;
+      if (this.unit) {
+        return weight[this.unitProp]
+          ? weight[this.unitProp].abbr
+          : volume[this.unitProp].abbr;
+      }
+      return "";
     },
     unitProp() {
       return this.unit.toLowerCase().replace(/\s+/g, "");

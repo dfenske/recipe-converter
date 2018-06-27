@@ -7,7 +7,7 @@
     <div class="form-inline row">
       <label class="col-sm" for="Unit">Units</label>
       <select class="form-control col-sm" id="Unit" v-model="unit" >
-        <option v-for="unit in allUnits" :key="unit.name" :value="unit.name">{{ unit.name }} ({{ unit.abbr }})</option>
+        <option v-for="unit in allUnits" :key="unit.name" :value="unit.name">{{unit.name ? `${unit.name} (${unit.abbr})` : 'No Unit'}}</option>
       </select>
     </div>
     <div class="form-inline row">
@@ -21,31 +21,35 @@
 </template>
 
 <script>
-  import { volume, weight } from '../assets/conversions.js';
+import { volume, weight } from "../assets/conversions.js";
 
-  export default {
-    data() {
+export default {
+  data() {
+    return {
+      name: "",
+      amount: null,
+      unit: "Cup (c)",
+      volume: volume,
+      weight: weight
+    };
+  },
+  computed: {
+    allUnits() {
       return {
-        name: '',
-        amount: null,
-        unit: 'Cup (c)',
-        volume: volume,
-        weight: weight
-      }
-    },
-    computed: {
-      allUnits() {
-        return {...this.weight, ...this.volume};
-      }
-    },
-    methods: {
-      saveData() {
-        if (this.amount > 0) {
-          this.$emit('add-ingredient', this.name, this.amount, this.unit);
-        }
+        ...{ noUnit: { name: "", abbr: "" } },
+        ...this.weight,
+        ...this.volume
+      };
+    }
+  },
+  methods: {
+    saveData() {
+      if (this.amount > 0 && this.name) {
+        this.$emit("add-ingredient", this.name, this.amount, this.unit);
       }
     }
   }
+};
 </script>
 
 <style scoped lang='scss'>

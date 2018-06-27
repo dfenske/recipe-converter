@@ -211,7 +211,7 @@ export default {
 }
 
 .form-control.title {
-  width: 50%;
+  max-width: 500px;
   text-align: center;
   font-size: 36px;
 }
