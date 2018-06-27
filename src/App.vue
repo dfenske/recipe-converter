@@ -1,13 +1,14 @@
 <template>
   <div id="app">
     <nav class="navbar navbar-dark bg-dark">
-      <h1 class="text-white">Recipe Converter</h1>
+      <h1 class="text-white">Convert My Recipe</h1>
     </nav>
 
     <div class="container">
       <h2 class="no-print recipe-title"><input class="form-control title" v-model.lazy="recipeTitle" placeholder="What is this recipe called?" /></h2>
       <div class="row no-print">
         <div class="col-sm recipe">
+          <div class="subtle no-print mb-2">Hover over an ingredient to delete it.</div>
           <ul>
             <li v-for="ingredient in recipe" :key="ingredient.name">
               <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :converted="false" v-on:delete-item="deleteItem" ></Ingredient>
@@ -18,6 +19,9 @@
           <new-ingredient v-on:add-ingredient="addIngredient" />
         </div>
       </div>
+      <div>
+        <textarea class="form-control no-print" placeholder="Enter the instructions here..." v-model.lazy="instructions" />
+      </div>
       <div class="multiplier mt-2 no-print">
         <label for="Multiplier">x </label>
         <input class="form-control" v-model.number="multiplier" id="Multiplier" type="number"/>
@@ -26,12 +30,14 @@
       <hr class="no-print"/>
       <h2 class="minHeight40">{{ recipeTitle ? recipeTitle + ' x ' + multiplier : ''}} </h2>
       <div class="recipe">
+        <div class="subtle no-print">Hover over an ingredient to change the units.</div>
         <div class="text-right"><i class="fas fa-print fa-lg print-icon no-print" @click="print"></i></div>
         <ul>
           <li v-for="ingredient in convertedRecipe" :key="ingredient.name">
             <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :converted="true" v-on:update-ingredient="updateIngredient"></Ingredient>
           </li>
         </ul>
+        <div>{{ instructions }}</div>
       </div>
     </div>
   </div>
@@ -57,13 +63,15 @@ export default {
       units: {
         volume,
         weight
-      }
+      },
+      instructions: ''
     };
   },
   async mounted() {
     localforage.getItem('recipe', (err, value) => this.mountRecipe(err, value));
     localforage.getItem('recipeTitle', (err, value) => this.mountTitle(err, value));
     localforage.getItem('multiplier', (err, value) => this.mountMultiplier(err, value));
+    localforage.getItem('instructions', (err, value) => this.mountInstructions(err, value));
   },
   methods: {
     mountRecipe(err, value) {
@@ -76,18 +84,26 @@ export default {
     },
     mountTitle(err, value) {
       if (err || !value) {
-        localforage.setItem('recipeTitle', []);
-        this.recipeTitle = [];
+        localforage.setItem('recipeTitle', '');
+        this.recipeTitle = '';
       } else {
         this.recipeTitle = value;
       }
     },
     mountMultiplier(err, value) {
       if (err || !value) {
-        localforage.setItem('multiplier', []);
-        this.multiplier = [];
+        localforage.setItem('multiplier', 1);
+        this.multiplier = 1;
       } else {
         this.multiplier = value;
+      }
+    },
+    mountInstructions(err, value) {
+      if (err || !value) {
+        localforage.setItem('instructions', '');
+        this.instructions = '';
+      } else {
+        this.instructions = value;
       }
     },
     addIngredient(name, amount, unit) {
@@ -117,6 +133,9 @@ export default {
     },
     recipeTitle: function() {
       localforage.setItem('recipeTitle', this.recipeTitle);
+    },
+    instructions: function() {
+      localforage.setItem('instructions', this.instructions);
     }
   },
   computed: {
@@ -177,5 +196,11 @@ export default {
 
 .minHeight40 {
   min-height: 40px;
+}
+
+.subtle {
+  color: gray;
+  font-style: italic;
+  font-size: 14px;
 }
 </style>

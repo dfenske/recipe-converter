@@ -1,1 +1,1 @@
-Recipe Converter: An Experiment in Vue.js
+Convert My Recipe: An Experiment in Vue.js

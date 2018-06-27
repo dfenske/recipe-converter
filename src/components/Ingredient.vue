@@ -3,7 +3,7 @@
     <div class="ingredient">
       <span :class="{ medium : !converted, large : converted }" >{{ format(amount) }} {{ unitAbbr }} {{ name }} <i v-if="!converted" class="far fa-times-circle" @click="deleteItem"></i></span>
       <span :class="{ large : converted }" v-if="converted">
-        <select class="form-control fade-in inline" @change="changeUnits">
+        <select class="form-control inline" @change="changeUnits">
             <option :value="null" selected disabled>Change the units...</option>
             <option v-for="unit in relevantUnits" :key="unit.name" :value="unit.name">{{ unit.name }} ({{ unit.abbr }})</option>
         </select>
@@ -112,32 +112,33 @@ export default {
 
       select {
         opacity: 0;
+        transition: opacity 1s ease-in-out;
       }
     }
 
     &:hover {
       span select {
         opacity: 1;
+        transition: opacity 0.4s ease-in-out;
       }
     }
 
     i {
-      display: none;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      padding-left: 15px;
+      color: #dc3545;
+      cursor: pointer;
+      float: right;
     }
 
     &:hover i {
-      display: inline-block;
-      color: #dc3545;
-      cursor: pointer;
-      padding-left: 15px;
+      opacity: 1;
+      transition: opacity 0.4s ease-in-out;
 
       &:hover {
         color: darkred;
       }
-    }
-
-    .fade-in {
-      transition: opacity 0.4s ease-in-out;
     }
   }
 
