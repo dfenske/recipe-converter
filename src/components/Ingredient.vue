@@ -1,8 +1,8 @@
 <template>
   <div class="ingredient-container">
     <div class="ingredient">
-      <span>{{ format(amount) }} {{ unitAbbr }} {{ name }} <i v-if="showDelete" class="far fa-times-circle" @click="deleteItem"></i></span>
-      <span v-if="showUnits">
+      <span :class="{ medium : !converted, large : converted }" >{{ format(amount) }} {{ unitAbbr }} {{ name }} <i v-if="!converted" class="far fa-times-circle" @click="deleteItem"></i></span>
+      <span :class="{ large : converted }" v-if="converted">
         <select class="form-control fade-in inline" @change="changeUnits">
             <option :value="null" selected disabled>Change the units...</option>
             <option v-for="unit in relevantUnits" :key="unit.name" :value="unit.name">{{ unit.name }} ({{ unit.abbr }})</option>
@@ -22,8 +22,7 @@ export default {
     abbr: String,
     amount: Number,
     unit: String,
-    showDelete: Boolean,
-    showUnits: Boolean
+    converted: Boolean
   },
   methods: {
     deleteItem() {
@@ -98,16 +97,22 @@ export default {
   letter-spacing: 2px;
   padding-left: 15px;
 
-
   .ingredient {
     display: flex;
     min-height: 40px;
     
     span {
-      width: 50%;
-    }
-    span select {
-      opacity: 0;
+      &.large {
+        width: 50%;
+      }
+
+      &.medium {
+        width: 75%;
+      }
+
+      select {
+        opacity: 0;
+      }
     }
 
     &:hover {

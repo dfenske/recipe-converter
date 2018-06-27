@@ -10,7 +10,7 @@
         <div class="col-sm">
           <ul class="recipe">
             <li v-for="ingredient in recipe" :key="ingredient.name">
-              <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :showDelete="true" v-on:delete-item="deleteItem"></Ingredient>
+              <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :converted="false" v-on:delete-item="deleteItem" ></Ingredient>
             </li>
           </ul>
         </div>
@@ -27,7 +27,7 @@
       <h2>Converted Recipe</h2>
       <ul class="recipe">
         <li v-for="ingredient in convertedRecipe" :key="ingredient.name">
-          <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :showDelete="false" :showUnits="true" v-on:update-ingredient="updateIngredient"></Ingredient>
+          <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :converted="true" v-on:update-ingredient="updateIngredient"></Ingredient>
         </li>
       </ul>
     </div>
@@ -56,12 +56,18 @@ export default {
       }
     };
   },
-  mounted() {
-    if (localforage.getItem('recipe')) {
-      this.recipe = JSON.parse(localStorage.getItem('recipe')) || [];
-    }
+  async mounted() {
+    localforage.getItem('recipe', (err, value) => this.mountRecipe(err, value));
   },
   methods: {
+    mountRecipe(err, value) {
+      if (err || !value) {
+        localforage.setItem('recipe', []);
+        this.recipe = [];
+      } else {
+        this.recipe = value;
+      }
+    },
     addIngredient(name, amount, unit) {
       this.recipe.push({
         name: name,
@@ -79,7 +85,7 @@ export default {
   },
   watch: {
     recipe: function() {
-      localforage.setItem('recipe', JSON.stringify(this.recipe));
+      localforage.setItem('recipe', this.recipe);
     }
   },
   computed: {
