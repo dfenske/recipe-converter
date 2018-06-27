@@ -8,19 +8,22 @@
   margin-top: 30px;
 }
 
-ul.recipe {
+.recipe {
   width: 75%;
   margin: 0 auto;
   border: 1px dashed gray;
   border-radius: 3px;
   padding: 30px;
-  list-style: none;
   margin-bottom: 30px;
+
+  ul {
+    list-style: none;
   
-  li:before {
-    content: '-';
-    position: absolute;
-    margin-left: -15px;
+    li:before {
+      content: '-';
+      position: absolute;
+      margin-left: -15px;
+    }
   }
 }
 
@@ -49,3 +52,26 @@ h2 {
 .ingredient {
   letter-spacing: 2px;
 }
+
+.text-right {
+  text-align: right;
+}
+  
+i.print-icon {
+  color: gray;
+  cursor: pointer;
+
+  &:hover {
+    color: $dark;
+  }
+}
+
+@media print
+{    
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+}
+
+@page { size: auto;  margin: 0mm; }
