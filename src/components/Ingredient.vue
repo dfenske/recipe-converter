@@ -64,16 +64,10 @@ export default {
       }
     },
     changeUnits(e) {
-      let newUnit = e.target.value || "";
-      newUnit = newUnit.toLowerCase().replace(/\s+/g, '');
-
-      const unitObj = volume[newUnit] || weight[newUnit];
-      const multiplier = unitObj[this.unitProp]
-      if (!multiplier) {
-        this.errorMessage = 'You can\'t combine weights and volumes.';
-      } else {
-        const newAmount = this.amount * (1/multiplier);
-        this.$emit("update-ingredient", this.name, newAmount, newUnit);
+      let newUnit = e.target.value;
+      if (newUnit) {
+        newUnit = newUnit.toLowerCase().replace(/\s+/g, "");
+        this.$emit("update-ingredient", this.name, newUnit);
       }
     }
   },
@@ -81,11 +75,13 @@ export default {
     relevantUnits() {
       return weight[this.unitProp] ? weight : volume;
     },
-    unitProp() {
-      return this.unit.toLowerCase().replace(/\s+/g, '');
-    },
     unitAbbr() {
-      return weight[this.unitProp] ? weight[this.unitProp].abbr : volume[this.unitProp].abbr;
+      return weight[this.unitProp]
+        ? weight[this.unitProp].abbr
+        : volume[this.unitProp].abbr;
+    },
+    unitProp() {
+      return this.unit.toLowerCase().replace(/\s+/g, "");
     }
   }
 };
@@ -100,7 +96,7 @@ export default {
   .ingredient {
     display: flex;
     min-height: 40px;
-    
+
     span {
       &.large {
         width: 50%;

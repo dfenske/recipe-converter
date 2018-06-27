@@ -44,39 +44,45 @@
 </template>
 
 <script>
-import localforage from 'localforage';
-import Ingredient from './components/Ingredient.vue';
-import NewIngredient from './components/NewIngredient.vue';
-import { volume, weight } from './assets/conversions.js';
+import localforage from "localforage";
+import Ingredient from "./components/Ingredient.vue";
+import NewIngredient from "./components/NewIngredient.vue";
+import { volume, weight } from "./assets/conversions.js";
 
 export default {
-  name: 'app',
+  name: "app",
   components: {
     Ingredient,
     NewIngredient
   },
   data() {
     return {
-      recipeTitle: '',
+      recipeTitle: "",
       multiplier: 1,
       recipe: [],
       units: {
         volume,
         weight
       },
-      instructions: ''
+      instructions: ""
     };
   },
   async mounted() {
-    localforage.getItem('recipe', (err, value) => this.mountRecipe(err, value));
-    localforage.getItem('recipeTitle', (err, value) => this.mountTitle(err, value));
-    localforage.getItem('multiplier', (err, value) => this.mountMultiplier(err, value));
-    localforage.getItem('instructions', (err, value) => this.mountInstructions(err, value));
+    localforage.getItem("recipe", (err, value) => this.mountRecipe(err, value));
+    localforage.getItem("recipeTitle", (err, value) =>
+      this.mountTitle(err, value)
+    );
+    localforage.getItem("multiplier", (err, value) =>
+      this.mountMultiplier(err, value)
+    );
+    localforage.getItem("instructions", (err, value) =>
+      this.mountInstructions(err, value)
+    );
   },
   methods: {
     mountRecipe(err, value) {
       if (err || !value) {
-        localforage.setItem('recipe', []);
+        localforage.setItem("recipe", []);
         this.recipe = [];
       } else {
         this.recipe = value;
@@ -84,15 +90,15 @@ export default {
     },
     mountTitle(err, value) {
       if (err || !value) {
-        localforage.setItem('recipeTitle', '');
-        this.recipeTitle = '';
+        localforage.setItem("recipeTitle", "");
+        this.recipeTitle = "";
       } else {
         this.recipeTitle = value;
       }
     },
     mountMultiplier(err, value) {
       if (err || !value) {
-        localforage.setItem('multiplier', 1);
+        localforage.setItem("multiplier", 1);
         this.multiplier = 1;
       } else {
         this.multiplier = value;
@@ -100,8 +106,8 @@ export default {
     },
     mountInstructions(err, value) {
       if (err || !value) {
-        localforage.setItem('instructions', '');
-        this.instructions = '';
+        localforage.setItem("instructions", "");
+        this.instructions = "";
       } else {
         this.instructions = value;
       }
@@ -114,11 +120,27 @@ export default {
       });
     },
     deleteItem(name) {
-      this.recipe.splice(this.recipe.findIndex(x => x.name===name), 1);
+      this.recipe.splice(this.recipe.findIndex(x => x.name === name), 1);
     },
-    updateIngredient(name, newAmount, newUnit) {
+    updateIngredient(name, newUnit) {
+      // find this ingredient in the recipe
       const index = this.recipe.findIndex(x => x.name === name);
-      this.recipe.splice(index, 1, { name: name, amount: newAmount, unit: newUnit });
+      const currIngredient = this.recipe[index];
+      const currAmount = currIngredient.amount;
+      const currUnit = currIngredient.unit.toLowerCase().replace(/\s+/g, "");
+
+      // find the new unit object in the conversions
+      const newUnitObj = volume[newUnit] || weight[newUnit];
+      const unitMultiplier = newUnitObj[currUnit];
+
+      if (unitMultiplier) {
+        const newAmount = currAmount * (1 / unitMultiplier);
+        this.recipe.splice(index, 1, {
+          name: name,
+          amount: newAmount,
+          unit: newUnit
+        });
+      }
     },
     print() {
       window.print();
@@ -126,16 +148,16 @@ export default {
   },
   watch: {
     recipe: function() {
-      localforage.setItem('recipe', this.recipe);
+      localforage.setItem("recipe", this.recipe);
     },
     multiplier: function() {
-      localforage.setItem('multiplier', this.multiplier);
+      localforage.setItem("multiplier", this.multiplier);
     },
     recipeTitle: function() {
-      localforage.setItem('recipeTitle', this.recipeTitle);
+      localforage.setItem("recipeTitle", this.recipeTitle);
     },
     instructions: function() {
-      localforage.setItem('instructions', this.instructions);
+      localforage.setItem("instructions", this.instructions);
     }
   },
   computed: {
@@ -149,7 +171,7 @@ export default {
       });
     }
   }
-}
+};
 </script>
 
 <style scoped lang='scss'>
@@ -175,17 +197,17 @@ export default {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
   }
 
-  input[type=number]::-webkit-inner-spin-button, 
-  input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none; 
-    margin: 0; 
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 }
 
 .recipe-title {
   display: flex;
   align-items: center;
-  justify-content: center;  
+  justify-content: center;
 }
 
 .form-control.title {
