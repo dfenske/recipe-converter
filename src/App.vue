@@ -25,20 +25,17 @@
       
       <hr/>
       <h2>Converted Recipe</h2>
-      <div class="row">
-        <div class="offset-sm-3 col-sm-6">
-          <ul class="recipe">
-            <li v-for="ingredient in convertedRecipe" :key="ingredient.name">
-              <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :showDelete="false" :showUnits="true" v-on:update-ingredient="updateIngredient"></Ingredient>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <ul class="recipe">
+        <li v-for="ingredient in convertedRecipe" :key="ingredient.name">
+          <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :showDelete="false" :showUnits="true" v-on:update-ingredient="updateIngredient"></Ingredient>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
+import localforage from 'localforage';
 import Ingredient from './components/Ingredient.vue';
 import NewIngredient from './components/NewIngredient.vue';
 import { volume, weight } from './assets/conversions.js';
@@ -59,6 +56,11 @@ export default {
       }
     };
   },
+  mounted() {
+    if (localforage.getItem('recipe')) {
+      this.recipe = JSON.parse(localStorage.getItem('recipe')) || [];
+    }
+  },
   methods: {
     addIngredient(name, amount, unit) {
       this.recipe.push({
@@ -73,6 +75,11 @@ export default {
     updateIngredient(name, newAmount, newUnit) {
       const index = this.recipe.findIndex(x => x.name === name);
       this.recipe.splice(index, 1, { name: name, amount: newAmount, unit: newUnit });
+    }
+  },
+  watch: {
+    recipe: function() {
+      localforage.setItem('recipe', JSON.stringify(this.recipe));
     }
   },
   computed: {

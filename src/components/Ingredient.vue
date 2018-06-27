@@ -1,7 +1,7 @@
 <template>
   <div class="ingredient-container">
     <div class="ingredient">
-      {{ format(amount) }} {{ unit }} {{ name }} <i v-if="showDelete" class="far fa-times-circle" @click="deleteItem"></i>
+      <span>{{ format(amount) }} {{ unitAbbr }} {{ name }} <i v-if="showDelete" class="far fa-times-circle" @click="deleteItem"></i></span>
       <span v-if="showUnits">
         <select class="form-control fade-in inline" @change="changeUnits">
             <option :value="null" selected disabled>Change the units...</option>
@@ -27,7 +27,7 @@ export default {
   },
   methods: {
     deleteItem() {
-      this.$emit("deleteItem", this.name);
+      this.$emit("delete-item", this.name);
     },
     format(value) {
       const wholeNumber =
@@ -69,7 +69,7 @@ export default {
       newUnit = newUnit.toLowerCase().replace(/\s+/g, '');
 
       const unitObj = volume[newUnit] || weight[newUnit];
-      const multiplier = unitObj[this.unit.toLowerCase().replace(/\+/g, '')]
+      const multiplier = unitObj[this.unitProp]
       if (!multiplier) {
         this.errorMessage = 'You can\'t combine weights and volumes.';
       } else {
@@ -80,7 +80,13 @@ export default {
   },
   computed: {
     relevantUnits() {
-      return weight[this.unit.toLowerCase().replace(/\+/g, '')] ? weight : volume;
+      return weight[this.unitProp] ? weight : volume;
+    },
+    unitProp() {
+      return this.unit.toLowerCase().replace(/\s+/g, '');
+    },
+    unitAbbr() {
+      return weight[this.unitProp] ? weight[this.unitProp].abbr : volume[this.unitProp].abbr;
     }
   }
 };
@@ -95,7 +101,15 @@ export default {
 
   .ingredient {
     display: flex;
+    min-height: 40px;
     
+    span {
+      width: 50%;
+    }
+    span select {
+      opacity: 0;
+    }
+
     &:hover {
       span select {
         opacity: 1;
@@ -115,10 +129,6 @@ export default {
       &:hover {
         color: darkred;
       }
-    }
-
-    span select {
-      opacity: 0;
     }
 
     .fade-in {
