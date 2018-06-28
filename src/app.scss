@@ -1,85 +1,44 @@
 @import "bootstrap/scss/bootstrap.scss";
+@import "./assets/spacing";
+
+$blue: #004e9b;
+$light-blue: #9dd8e1;
+
 body {
   font-family: "Quicksand", sans-serif;
 }
-
-nav.bg-dark {
-  background-color: #004e9b !important;
-}
-
-.form-control {
-  margin: 10px;
-}
-
 .container {
   margin-top: 30px;
 }
-
-.recipe {
-  width: 75%;
-  margin: 0 auto;
-  border: 1px dashed gray;
-  border-radius: 3px;
-  padding: 30px;
-  margin-bottom: 30px;
-
-  ul {
-    list-style: none;
-
-    li:before {
-      content: "-";
-      position: absolute;
-      margin-left: -15px;
-    }
-  }
+.navbar.blue {
+  background-color: $blue !important;
+  color: #fff;
 }
-
 h2 {
   text-align: center;
   margin: 30px 0px;
 }
-
-.align-right {
-  float: right;
-}
-
-.btn {
-  border: 2px solid #9dd8e1;
+.btn.blue {
+  border: 2px solid $light-blue;
   background-color: white;
   border-radius: 20px;
-  color: #9dd8e1;
-
+  color: $light-blue;
   &:hover {
     background-color: white;
     border-color: $cyan;
     color: $cyan;
   }
 }
-
-.ingredient {
-  letter-spacing: 2px;
+.text-bold {
+  font-weight: bold;
 }
-
-.text-right {
-  text-align: right;
-}
-
-i.print-icon {
-  color: gray;
-  cursor: pointer;
-
-  &:hover {
-    color: $dark;
-  }
-}
-
+// Print configuration
 @media print {
   .no-print,
   .no-print * {
     display: none !important;
   }
 }
-
 @page {
   size: auto;
   margin: 0mm;

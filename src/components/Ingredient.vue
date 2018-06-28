@@ -1,15 +1,15 @@
 <template>
-  <div class="ingredient-container">
-    <div class="ingredient">
-      <span :class="{ medium : !converted, large : converted }" >{{ format(amount) }} {{ unitAbbr }} {{ name }} <i v-if="!converted" class="far fa-times-circle" @click="deleteItem"></i></span>
-      <span :class="{ large : converted }" v-if="converted">
-        <select v-if="unit" class="form-control inline" @change="changeUnits">
+  <div class="ingredient">
+      <span>
+        {{ format(amount) }} {{ unitAbbr }} {{ name }} <i v-if="!converted" class="far fa-times-circle" @click="deleteItem"></i>
+      </span>
+      <span  v-if="converted">
+        <select v-if="unit" class="form-control margin-sm" @change="changeUnits">
             <option :value="null" selected disabled>Change the units...</option>
             <option v-for="unit in relevantUnits" :key="unit.name" :value="unit.name">{{ unit.name }} ({{ unit.abbr }})</option>
         </select>
       </span>
     </div>
-  </div>
 </template>
 
 <script>
@@ -96,46 +96,31 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-.ingredient-container {
+@import "bootstrap/scss/bootstrap.scss";
+.ingredient {
   letter-spacing: 2px;
   padding-left: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 40px;
+  min-width: 430px;
 
-  .ingredient {
-    display: flex;
-    min-height: 40px;
-
-    span {
-      &.large {
-        width: 50%;
-      }
-
-      &.medium {
-        width: 75%;
-      }
-
-      select {
-        opacity: 0;
-        transition: opacity 1s ease-in-out;
-      }
+  span {
+    flex: 8;
+    min-width: 200px;
+    select {
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
     }
+  }
 
-    &:hover {
-      span select {
-        opacity: 1;
-        transition: opacity 0.4s ease-in-out;
-      }
+  &:hover {
+    span select {
+      opacity: 1;
+      transition: opacity 0.4s ease-in-out;
     }
 
     i {
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-      padding-left: 15px;
-      color: #dc3545;
-      cursor: pointer;
-      float: right;
-    }
-
-    &:hover i {
       opacity: 1;
       transition: opacity 0.4s ease-in-out;
 
@@ -145,12 +130,34 @@ export default {
     }
   }
 
-  .inline {
+  i {
+    opacity: 0;
+    flex: 1;
+    transition: opacity 1s ease-in-out;
+    padding-left: 15px;
+    color: $red;
+    cursor: pointer;
+    float: right;
+  }
+
+  .form-control {
     display: inline-block;
     width: auto;
     margin: 0;
     margin-left: 15px;
     margin-top: -15px;
+  }
+}
+
+@media screen and (max-width: map-get($grid-breakpoints, "md")) {
+  .recipe ul {
+    margin-left: -15px;
+  }
+  .ingredient i {
+    opacity: 1;
+  }
+  .ingredient span select {
+    opacity: 1;
   }
 }
 </style>

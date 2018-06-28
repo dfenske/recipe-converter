@@ -1,0 +1,70 @@
+// Margins/Padding values
+$sizes: (
+  "xs": 10px,
+  "sm": 15px,
+  "md": 20px,
+  "lg": 25px,
+  "xl": 30px
+);
+
+$directions: ("top", "left", "right", "bottom");
+
+// MARGINS
+@mixin margin-x-list {
+  @each $i in $sizes {
+    .margin-#{nth($i, 1)} {
+      margin: nth($i, 2);
+    }
+  }
+}
+@include margin-x-list;
+
+@mixin margin-direction-list {
+  @each $i in $sizes {
+    @each $j in $directions {
+      .margin-#{$j}-#{nth($i, 1)} {
+        margin-#{$j}: nth($i, 2);
+      }
+    }
+  }
+}
+@include margin-direction-list;
+
+// PADDING
+@mixin padding-x-list {
+  @each $i in $sizes {
+    .padding-#{nth($i, 1)} {
+      padding: nth($i, 2);
+    }
+  }
+}
+@include padding-x-list;
+
+@mixin padding-direction-list {
+  @each $i in $sizes {
+    @each $j in $directions {
+      .padding-#{$j}-#{nth($i, 1)} {
+        padding-#{$j}: nth($i, 2);
+      }
+    }
+  }
+}
+@include padding-direction-list;
+
+// ALIGNMENTS
+
+.align-left {
+  float: left;
+}
+.align-right {
+  float: right;
+}
+.text-right {
+  text-align: right;
+}
+.text-left {
+  text-align: left;
+}
+.text-center {
+  text-align: center;
+}

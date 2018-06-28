@@ -1,43 +1,46 @@
 <template>
   <div id="app">
-    <nav class="navbar navbar-dark bg-dark">
-      <h1 class="text-white">Convert My Recipe</h1>
+    <nav class="navbar blue">
+      <h1>Convert My Recipe</h1>
     </nav>
-
-    <div class="container">
-      <h2 class="no-print recipe-title"><input class="form-control title" v-model.lazy="recipeTitle" placeholder="What is this recipe called?" /></h2>
-      <div class="row no-print">
-        <div class="col-sm recipe">
-          <div class="subtle no-print mb-2">Hover over an ingredient to delete it.</div>
+    <div class="container margin-bottom-lg">
+      <div class="user-directions text-bold text-center margin-bottom-lg">Enter your recipe's title, ingredients, and instructions and then enter the multiplier.</div>
+      <h2 class="recipe-title no-print">
+        <input class="form-control margin-sm" v-model.lazy="recipeTitle" placeholder="What is this recipe called?" />
+      </h2>
+      <div class="no-print original">
+        <div class="recipe">
+          <div v-if="recipe.length === 0" class="subtle no-print">Your recipe will show here. Enter ingredients below to start.</div>
+          <div v-if="recipe.length > 0" class="subtle no-print hover-text margin-bottom-sm">Hover over an ingredient to delete it.</div>
           <ul>
             <li v-for="ingredient in recipe" :key="ingredient.name">
               <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :converted="false" v-on:delete-item="deleteItem" ></Ingredient>
             </li>
           </ul>
         </div>
-        <div class="col-sm">
-          <new-ingredient v-on:add-ingredient="addIngredient" />
-        </div>
       </div>
-      <div>
-        <textarea class="form-control no-print" placeholder="Enter the instructions here..." v-model.lazy="instructions" />
+      <div class="add-ingredients">
+        <new-ingredient v-on:add-ingredient="addIngredient" />
       </div>
-      <div class="multiplier mt-2 no-print">
+      <div class="instructions-input">
+        <textarea class="form-control margin-sm no-print" placeholder="Enter the instructions here..." v-model.lazy="instructions" />
+      </div>
+      <div class="multiplier margin-top-sm no-print">
         <label for="Multiplier">x </label>
-        <input class="form-control" v-model.number="multiplier" id="Multiplier" type="number"/>
+        <input class="form-control margin-sm" v-model.number="multiplier" id="Multiplier" type="number"/>
       </div>
       
       <hr class="no-print"/>
-      <h2 class="minHeight40">{{ recipeTitle ? recipeTitle + ' x ' + multiplier : ''}} </h2>
-      <div class="recipe">
-        <div class="subtle no-print">Hover over an ingredient to change the units.</div>
-        <div class="text-right"><i class="fas fa-print fa-lg print-icon no-print" @click="print"></i></div>
+      <h2 class="new-recipe-title">{{ recipeTitle ? recipeTitle + ' x ' + multiplier : ''}} </h2>
+      <div class="new recipe">
+        <div v-if="recipe.length > 0" class="subtle hover-text no-print">Hover over an ingredient to change the units.</div>
+        <div class="text-right"><i class="fas fa-print fa-lg no-print" @click="print"></i></div>
         <ul>
           <li v-for="ingredient in convertedRecipe" :key="ingredient.name">
             <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :converted="true" v-on:update-ingredient="updateIngredient"></Ingredient>
           </li>
         </ul>
-        <div>{{ instructions }}</div>
+        <div class="instructions">{{ instructions }}</div>
       </div>
     </div>
   </div>
@@ -175,6 +178,94 @@ export default {
 </script>
 
 <style scoped lang='scss'>
+@import "bootstrap/scss/bootstrap.scss";
+:root {
+  --grid-template-num-columns: 1fr 1fr;
+  --first-col: 1 / 2;
+  --second-col: 2 / 3;
+}
+
+.app * {
+  box-sizing: border-box;
+}
+
+.container {
+  --grid-template-num-columns: 1fr 1fr;
+  display: grid;
+  grid-template-columns: var(--grid-template-num-columns);
+  grid-gap: 1em;
+}
+
+.recipe-title input {
+  width: 100%;
+}
+
+.original {
+  grid-column: var(--first-col);
+}
+
+.add-ingredients {
+  grid-column: var(--second-col);
+}
+
+.user-directions,
+.recipe-title,
+.instructions-input,
+.multiplier,
+.new-recipe-title,
+.recipe.new {
+  grid-column: 1 / -1;
+}
+
+@media screen and (max-width: map-get($grid-breakpoints, "md")) {
+  .container {
+    --grid-template-num-columns: 1fr;
+    --first-col: 1 / -1;
+    --second-col: 1 / -1;
+  }
+
+  .recipe ul {
+    margin-left: -15px;
+  }
+  i.fa-print {
+    display: none;
+  }
+  .subtle.hover-text {
+    display: none;
+  }
+}
+@media screen and (max-width: map-get($grid-breakpoints, "md")) {
+  h2 input {
+    width: 90% !important;
+  }
+}
+
+h2 input.form-control {
+  text-align: center;
+  font-size: calc(0.5rem + 2vmin + 1vw);
+}
+
+i.fa-print {
+  color: gray;
+  cursor: pointer;
+  &:hover {
+    color: $dark;
+  }
+}
+.recipe {
+  margin: 0 auto;
+  border: 1px dashed gray;
+  border-radius: 3px;
+  padding: 15px;
+  ul {
+    list-style: none;
+    li:before {
+      content: "-";
+      position: absolute;
+      margin-left: -15px;
+    }
+  }
+}
 .multiplier {
   display: flex;
   align-items: center;
@@ -183,8 +274,8 @@ export default {
   color: gray;
 
   label {
-    margin: 0;
     font-style: italic;
+    padding-right: 15px;
   }
 
   input {
@@ -204,25 +295,27 @@ export default {
   }
 }
 
-.recipe-title {
+h2 {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.form-control.title {
-  max-width: 500px;
-  text-align: center;
-  font-size: 36px;
-}
-
-.minHeight40 {
-  min-height: 40px;
+textarea {
+  min-height: 100px;
 }
 
 .subtle {
   color: gray;
   font-style: italic;
   font-size: 14px;
+}
+
+.recipe-title-display {
+  min-height: 40px;
+}
+
+.instructions {
+  white-space: pre-wrap;
 }
 </style>
