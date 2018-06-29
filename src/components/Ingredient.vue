@@ -1,9 +1,12 @@
 <template>
-  <div class="ingredient">
+  <div class="ingredient padding-left-sm padding-bottom-sm">
       <span>
-        {{ format(amount) }} {{ unitAbbr }} {{ name }} <i v-if="!converted" class="far fa-times-circle" @click="deleteItem"></i>
+        {{ formatAsFraction(amount) }} {{ unitAbbr }} {{ name }} 
       </span>
-      <span  v-if="converted">
+      <span v-if="!isConvertedRecipe" class="text-right">
+        <i class="far fa-times-circle" @click="deleteItem"></i>
+      </span>
+      <span v-if="isConvertedRecipe">
         <select v-if="unit" class="form-control margin-sm" @change="changeUnits">
             <option :value="null" selected disabled>Change the units...</option>
             <option v-for="unit in relevantUnits" :key="unit.name" :value="unit.name">{{ unit.name }} ({{ unit.abbr }})</option>
@@ -19,16 +22,15 @@ export default {
   name: "Ingredient",
   props: {
     name: String,
-    abbr: String,
     amount: Number,
     unit: String,
-    converted: Boolean
+    isConvertedRecipe: Boolean
   },
   methods: {
     deleteItem() {
       this.$emit("delete-item", this.name);
     },
-    format(value) {
+    formatAsFraction(value) {
       const wholeNumber =
         Math.floor(value) === 0 ? "" : Math.floor(value).toString();
       const decimal = value - wholeNumber;
@@ -74,9 +76,11 @@ export default {
   },
   computed: {
     relevantUnits() {
+      // only return the volume units if the current unit is a volume, and same for weight.
       if (this.unit) {
         return weight[this.unitProp] ? weight : volume;
       }
+      // this handles the case where we have a unit-less ingredient (like eggs)
       return [];
     },
     unitAbbr() {
@@ -88,32 +92,39 @@ export default {
       return "";
     },
     unitProp() {
+      // get the property name for this unit (no spaces, all lower case)
       return this.unit.toLowerCase().replace(/\s+/g, "");
     }
   }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 @import "bootstrap/scss/bootstrap.scss";
+
 .ingredient {
   letter-spacing: 2px;
-  padding-left: 15px;
-  display: flex;
-  flex-wrap: wrap;
-  min-height: 40px;
-  min-width: 430px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1em;
 
+  // hide x and select by default
   span {
-    flex: 8;
-    min-width: 200px;
     select {
       opacity: 0;
       transition: opacity 1s ease-in-out;
     }
   }
 
+  i {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    padding-left: 15px;
+    color: $red;
+    cursor: pointer;
+  }
+
+  // if you hover over ingredient, show x and select
   &:hover {
     span select {
       opacity: 1;
@@ -129,35 +140,17 @@ export default {
       }
     }
   }
-
-  i {
-    opacity: 0;
-    flex: 1;
-    transition: opacity 1s ease-in-out;
-    padding-left: 15px;
-    color: $red;
-    cursor: pointer;
-    float: right;
-  }
-
-  .form-control {
-    display: inline-block;
-    width: auto;
-    margin: 0;
-    margin-left: 15px;
-    margin-top: -15px;
-  }
 }
 
+// Mobile: show the hover items by default
 @media screen and (max-width: map-get($grid-breakpoints, "md")) {
-  .recipe ul {
-    margin-left: -15px;
-  }
-  .ingredient i {
-    opacity: 1;
-  }
-  .ingredient span select {
-    opacity: 1;
+  .ingredient {
+    i {
+      opacity: 1;
+    }
+    span select {
+      opacity: 1;
+    }
   }
 }
 </style>

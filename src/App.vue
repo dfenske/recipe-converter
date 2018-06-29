@@ -3,41 +3,36 @@
     <nav class="navbar blue">
       <h1>Convert My Recipe</h1>
     </nav>
-    <div class="container margin-bottom-lg">
-      <div class="user-directions text-bold text-center margin-bottom-lg">Enter your recipe's title, ingredients, and instructions and then enter the multiplier.</div>
-      <h2 class="recipe-title no-print">
-        <input class="form-control margin-sm" v-model.lazy="recipeTitle" placeholder="What is this recipe called?" />
-      </h2>
-      <div class="no-print original">
-        <div class="recipe">
-          <div v-if="recipe.length === 0" class="subtle no-print">Your recipe will show here. Enter ingredients below to start.</div>
-          <div v-if="recipe.length > 0" class="subtle no-print hover-text margin-bottom-sm">Hover over an ingredient to delete it.</div>
-          <ul>
-            <li v-for="ingredient in recipe" :key="ingredient.name">
-              <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :converted="false" v-on:delete-item="deleteItem" ></Ingredient>
-            </li>
-          </ul>
-        </div>
+    <div class="container margin-bottom-lg margin-top-lg">
+      <div class="full-width text-center margin-bottom-lg no-print">Hello! Enter your recipe's title, ingredients, and instructions and then enter the multiplier.</div>
+      <input class="recipe-title full-width no-print form-control margin-sm" v-model.lazy="recipeTitle" placeholder="What is this recipe called?" />
+      <div class="recipe original no-print">
+        <div v-if="recipe.length === 0" class="subtle">Your recipe will show here. Enter ingredients below to start.</div>
+        <div v-if="recipe.length > 0" class="subtle hover-text">Hover over an ingredient to delete it.</div>
+        <ul>
+          <li v-for="ingredient in recipe" :key="ingredient.name">
+            <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :isConvertedRecipe="false" v-on:delete-item="deleteItem" ></ingredient>
+          </li>
+        </ul>
       </div>
-      <div class="add-ingredients">
+      <div class="add-ingredients no-print">
         <new-ingredient v-on:add-ingredient="addIngredient" />
       </div>
-      <div class="instructions-input">
-        <textarea class="form-control margin-sm no-print" placeholder="Enter the instructions here..." v-model.lazy="instructions" />
+      <div class="full-width no-print">
+        <textarea class="form-control margin-sm" placeholder="Enter the instructions here (optional)..." v-model.lazy="instructions" />
       </div>
-      <div class="multiplier margin-top-sm no-print">
+      <div class="multiplier full-width padding-bottom-md margin-top-sm no-print">
         <label for="Multiplier">x </label>
         <input class="form-control margin-sm" v-model.number="multiplier" id="Multiplier" type="number"/>
       </div>
       
-      <hr class="no-print"/>
-      <h2 class="new-recipe-title">{{ recipeTitle ? recipeTitle + ' x ' + multiplier : ''}} </h2>
-      <div class="new recipe">
+      <h2 class="full-width recipe-title-display">{{ recipeTitle ? recipeTitle + ' x ' + multiplier : ''}} </h2>
+      <div class="full-width recipe">
         <div v-if="recipe.length > 0" class="subtle hover-text no-print">Hover over an ingredient to change the units.</div>
         <div class="text-right"><i class="fas fa-print fa-lg no-print" @click="print"></i></div>
         <ul>
           <li v-for="ingredient in convertedRecipe" :key="ingredient.name">
-            <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :converted="true" v-on:update-ingredient="updateIngredient"></Ingredient>
+            <ingredient :name="ingredient.name" :amount="ingredient.amount" :unit="ingredient.unit" :isConvertedRecipe="true" v-on:update-ingredient="updateIngredient"></Ingredient>
           </li>
         </ul>
         <div class="instructions">{{ instructions }}</div>
@@ -63,10 +58,6 @@ export default {
       recipeTitle: "",
       multiplier: 1,
       recipe: [],
-      units: {
-        volume,
-        weight
-      },
       instructions: ""
     };
   },
@@ -183,68 +174,39 @@ export default {
   --grid-template-num-columns: 1fr 1fr;
   --first-col: 1 / 2;
   --second-col: 2 / 3;
+  --base-font-size: 16px;
 }
-
+/* Grid stuff */
 .app * {
   box-sizing: border-box;
+  font-size: var(--base-font-size);
 }
-
 .container {
   --grid-template-num-columns: 1fr 1fr;
   display: grid;
   grid-template-columns: var(--grid-template-num-columns);
   grid-gap: 1em;
 }
-
-.recipe-title input {
+input.recipe-title {
   width: 100%;
+  font-size: calc(0.5rem + 2vmin + 1vw);
+  text-align: center;
 }
-
-.original {
+.recipe.original {
   grid-column: var(--first-col);
 }
-
 .add-ingredients {
   grid-column: var(--second-col);
 }
-
-.user-directions,
-.recipe-title,
-.instructions-input,
-.multiplier,
-.new-recipe-title,
-.recipe.new {
+.full-width {
   grid-column: 1 / -1;
 }
-
-@media screen and (max-width: map-get($grid-breakpoints, "md")) {
-  .container {
-    --grid-template-num-columns: 1fr;
-    --first-col: 1 / -1;
-    --second-col: 1 / -1;
-  }
-
-  .recipe ul {
-    margin-left: -15px;
-  }
-  i.fa-print {
-    display: none;
-  }
-  .subtle.hover-text {
-    display: none;
-  }
-}
-@media screen and (max-width: map-get($grid-breakpoints, "md")) {
-  h2 input {
-    width: 90% !important;
-  }
-}
+/* End grid stuff */
 
 h2 input.form-control {
   text-align: center;
-  font-size: calc(0.5rem + 2vmin + 1vw);
+  font-size: 3em;
 }
-
 i.fa-print {
   color: gray;
   cursor: pointer;
@@ -253,69 +215,80 @@ i.fa-print {
   }
 }
 .recipe {
-  margin: 0 auto;
   border: 1px dashed gray;
   border-radius: 3px;
-  padding: 15px;
+  padding: 1em;
   ul {
     list-style: none;
     li:before {
       content: "-";
       position: absolute;
-      margin-left: -15px;
+      margin-left: -1em;
     }
   }
+  textarea {
+    min-height: 100px;
+  }
+  .subtle {
+    color: gray;
+    font-style: italic;
+    font-size: 1em;
+  }
+  .instructions {
+    white-space: pre-wrap;
+  }
+}
+.recipe-title-display {
+  min-height: 2em;
+  font-size: calc(0.5rem + 2vmin + 1vw);
 }
 .multiplier {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 36px;
+  font-size: 3em;
   color: gray;
+  border-bottom: 1px solid lightgray;
 
   label {
     font-style: italic;
-    padding-right: 15px;
+    padding-right: 1em;
   }
 
   input {
-    font-size: 36px;
+    font-size: 1em;
     border: none;
     border-bottom: 2px solid gray;
     border-radius: 0;
     text-align: center;
-    width: 75px;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    width: 2em;
+    /* hide the arrows */
+    &[type="number"]::-webkit-inner-spin-button,
+    &[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
   }
+}
 
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+// mobile
+@media screen and (max-width: map-get($grid-breakpoints, "md")) {
+  .app {
+    --base-font-size: calc(0.5rem + 2vmin + 1vw);
   }
-}
-
-h2 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-textarea {
-  min-height: 100px;
-}
-
-.subtle {
-  color: gray;
-  font-style: italic;
-  font-size: 14px;
-}
-
-.recipe-title-display {
-  min-height: 40px;
-}
-
-.instructions {
-  white-space: pre-wrap;
+  .container {
+    --grid-template-num-columns: 1fr;
+    --first-col: 1 / -1;
+    --second-col: 1 / -1;
+  }
+  .recipe ul {
+    margin-left: -1em;
+  }
+  i.fa-print {
+    display: none;
+  }
+  .subtle.hover-text {
+    display: none;
+  }
 }
 </style>

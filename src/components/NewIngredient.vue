@@ -1,18 +1,18 @@
 <template>
   <div>
     <div class="form-inline">
-      <label class="col-sm" for="Amount">Amount</label>
-      <input type="number" class="form-control margin-sm col-sm" v-model.number="amount" id="Amount">
+      <label for="Amount">Amount</label>
+      <input type="number" class="form-control margin-sm" v-model.number="amount" id="Amount">
     </div>
     <div class="form-inline">
-      <label class="col-sm" for="Unit">Units</label>
-      <select class="form-control margin-sm col-sm" id="Unit" v-model="unit" >
+      <label for="Unit">Units</label>
+      <select class="form-control margin-sm" v-model="unit" id="Unit">
         <option v-for="unit in allUnits" :key="unit.name" :value="unit.name">{{unit.name ? `${unit.name} (${unit.abbr})` : 'No Unit'}}</option>
       </select>
     </div>
     <div class="form-inline">
-      <label class="col-sm" for="Name">Ingredient</label>
-      <input class="form-control margin-sm col-sm" v-model="name" id="Name" placeholder="Eg. Flour" @keyup.enter="saveData">
+      <label for="Name">Ingredient</label>
+      <input class="form-control margin-sm" v-model="name" id="Name" placeholder="Eg. Flour" @keyup.enter="saveData">
     </div>
     <div class="add-button margin-top-sm margin-bottom-sm">
       <button type="button" class="btn blue" @click="saveData">ADD +</button>
@@ -28,17 +28,16 @@ export default {
     return {
       name: "",
       amount: null,
-      unit: "Cup (c)",
-      volume: volume,
-      weight: weight
+      unit: "No Unit"
     };
   },
   computed: {
     allUnits() {
+      // return all units, and add a 'no unit' option.
       return {
         ...{ noUnit: { name: "", abbr: "" } },
-        ...this.weight,
-        ...this.volume
+        ...weight,
+        ...volume
       };
     }
   },
@@ -66,8 +65,11 @@ export default {
     text-align: center;
   }
 }
-
 .form-inline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.form-control {
   margin: 10px 0px;
 }
 </style>
