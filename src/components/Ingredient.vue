@@ -8,7 +8,7 @@
       </span>
       <span v-if="isConvertedRecipe">
         <select v-if="unit" class="form-control margin-sm" @change="changeUnits">
-            <option :value="null" selected disabled>Change the units...</option>
+            <option :value="null" selected disabled>Changeunits...</option>
             <option v-for="unit in relevantUnits" :key="unit.name" :value="unit.name">{{ unit.name }} ({{ unit.abbr }})</option>
         </select>
       </span>
